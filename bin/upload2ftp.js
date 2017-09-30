@@ -1,7 +1,25 @@
 let ftp = require('ftp');
 let path = require('path');
 let fs = require('fs');
-let {PATH_FROM/*'build'*/, PATH_TO/*'/fe-test/jia'*/, FTP_IP, FTP_USERNAME, FTP_PASSWORD} = require('./ftp_conf');
+let {PATH_FROM, PATH_TO, FTP_IP, FTP_USERNAME, FTP_PASSWORD} = require('./upload2ftp_conf.js');
+
+/**
+ 工程目录结构示例
+ project_root/
+ project_root/bin/upload2ftp.js
+ project_root/bin/upload2ftp_conf.js
+ project_root/build/{files_to_upload}
+ */
+ 
+
+// 源地址： 相对路径转换为绝对地址
+// 如果你的工程目录结构和上述示例不符，则需手动修改这里
+let PATH_ABS_FROM = formatSlash ( path.resolve( __dirname , '..' , PATH_FROM ) );
+
+
+
+
+
 
 
 let client = null;
@@ -10,14 +28,6 @@ let files_to_upload = [];
 let dirs_to_upload = []; // queue: first in first out
 
 
-/**
- 工程目录结构示例
- project_root/
- project_root/bin/upload2ftp.js
- project_root/bin/ftp_conf.js
- project_root/build/{files_to_upload}
- */
-let PATH_ABS_FROM = formatSlash ( path.resolve( __dirname , '..' , PATH_FROM ) );
 
 
 main();
@@ -66,12 +76,7 @@ function main() {
 	
 	client = new ftp();
 	
-	client.connect({
-		host: FTP_IP,
-		user: FTP_USERNAME,
-		password: FTP_PASSWORD,
-		keepalive: 1000
-	});
+	connect();
 	
 	client.on('ready', function() {
 		console.log('-----连接ftp服务器成功-----');
@@ -90,6 +95,18 @@ function main() {
 			connect();
 		};
 	})
+	
+	
+	
+	function connect() {
+	
+		client.connect({
+			host: FTP_IP,
+			user: FTP_USERNAME,
+			password: FTP_PASSWORD,
+			keepalive: 1000
+		});
+	}
 }
 
 
@@ -196,11 +213,3 @@ function calculateTargetPath(sourcePath) {
 function formatSlash(p) {
 	return p.replace(/\\/g, '/');
 }
-
-
-
-
-
-
-
-module.exports = { main: main };
