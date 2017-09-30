@@ -80,7 +80,13 @@ function main() {
 	
 	client.on('ready', function() {
 		console.log('-----连接ftp服务器成功-----');
-		uploadDirs(dirs_to_upload);
+		
+		
+        if (dirs_to_upload.length) { uploadDirs(dirs_to_upload); }
+        else if (files_to_upload.length) { uploadFiles(files_to_upload); }
+        else { client.end(); }
+        
+		// uploadDirs(dirs_to_upload);
 		// uploadFiles(files_to_upload); // todo: use promise to ensure order
 	})
 	
@@ -118,8 +124,10 @@ function main() {
  * 上传source目录 到 对应的target目录
  */
 function uploadDirs(source_dirs) {
-
-	let dirs_target = source_dirs.map(calculateTargetPath)
+    
+    
+    
+	let dirs_target = source_dirs.map(calculateTargetPath);
 	
 	
 	
@@ -161,6 +169,8 @@ function uploadDirs(source_dirs) {
  * 上传文件
  */
 function uploadFiles(files_source) {
+    
+    
 	
 	// let files_source = files_source.map(function(item){return item})
 	let files_target = files_source.map(calculateTargetPath)
@@ -187,7 +197,7 @@ function uploadFiles(files_source) {
 				
 				if (files_source.length===0) {
 					client.end();
-					return; 
+					return;
 				}
 			}
 			
